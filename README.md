@@ -118,7 +118,3 @@ Gopi nerella
 Youtube Video:
 
 [![Watch the Video: Students Info with ECC Cryptic Verifying Process](https://img.youtube.com/vi/9T-1dFIHJrg/0.jpg)](https://youtu.be/9T-1dFIHJrg)
-
-📄 License
-
-This project is released under the MIT License.
