@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Students List</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+        }
+
+        .navbar {
+            background: #2c3e50;
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar h1 {
+            font-size: 24px;
+        }
+
+        .navbar-right {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .verify-btn {
+            background: #9b59b6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .verify-btn:hover {
+            background: #8e44ad;
+            transform: translateY(-2px);
+        }
+
+        .logout-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .logout-btn:hover {
+            background: #c0392b;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .header-section {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .header-top h2 {
+            margin: 0;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .add-student-btn {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        .add-student-btn:hover {
+            background: #229954;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(39, 174, 96, 0.3);
+        }
+
+        .verify-actions-btn {
+            background: #9b59b6;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        .verify-actions-btn:hover {
+            background: #8e44ad;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(155, 89, 182, 0.3);
+        }
+
+        .search-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .search-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .search-btn:hover {
+            background: #2980b9;
+        }
+
+        .toggle-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+
+        .toggle-label {
+            font-size: 14px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.4s;
+            border-radius: 30px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: #2ecc71;
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(30px);
+        }
+
+        .toggle-status {
+            font-size: 14px;
+            color: #3498db;
+            font-weight: bold;
+        }
+
+        .students-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .student-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+
+        .student-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .student-id {
+            color: #3498db;
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .student-info {
+            color: #555;
+            margin: 8px 0;
+        }
+
+        .student-info strong {
+            color: #2c3e50;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .update-btn {
+            background: #f39c12;
+            color: white;
+        }
+
+        .update-btn:hover {
+            background: #e67e22;
+            transform: translateY(-2px);
+        }
+
+        .delete-btn {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #7f8c8d;
+        }
+
+        .error-message {
+            background: #e74c3c;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 60px;
+            color: #95a5a6;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>Student Information System</h1>
+        <div class="navbar-right">
+            <button class="verify-btn" onclick="goToVerifyActions()">
+                🔍 Verify Actions
+            </button>
+            <button class="logout-btn" onclick="handleLogout()">Logout</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="header-section">
+            <div class="header-top">
+                <h2>Students List</h2>
+                <div class="header-actions">
+                    <button class="verify-actions-btn" onclick="goToVerifyActions()">
+                        🔍 Verify Pending Actions
+                    </button>
+                    <button class="add-student-btn" onclick="addNewStudent()">
+                        ➕ Add New Student
+                    </button>
+                </div>
+            </div>
+            
+            <div class="search-bar">
+                <input type="text" id="searchInput" class="search-input" placeholder="Search by student ID or name...">
+                <button class="search-btn" onclick="searchStudents()">Search</button>
+            </div>
+            
+            <div class="toggle-section">
+                <span class="toggle-label">My uploads</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="viewToggle" onchange="handleToggle()">
+                    <span class="toggle-slider"></span>
+                </label>
+                <span class="toggle-status" id="toggleStatus">All uploads</span>
+            </div>
+        </div>
+
+        <div id="errorContainer"></div>
+        <div id="loadingIndicator" class="loading" style="display: none;">
+            Loading students...
+        </div>
+        <div id="studentsContainer" class="students-grid"></div>
+    </div>
+
+    <script>
+        // Check if session token exists
+        const sessionToken = localStorage.getItem('session_token');
+        if (!sessionToken) {
+            alert('Please login first');
+            window.location.href = './index.html';
+        }
+
+        // Load students on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            loadStudents();
+        });
+
+        function addNewStudent() {
+            // Clear any existing student data
+            localStorage.removeItem('studentToEdit');
+            // Redirect to action page
+            window.location.href = './action_students.html';
+        }
+
+        function goToVerifyActions() {
+            window.location.href = './verify_actions.html';
+        }
+
+        function handleToggle() {
+            const toggleCheckbox = document.getElementById('viewToggle');
+            const toggleStatus = document.getElementById('toggleStatus');
+            const studentsContainer = document.getElementById('studentsContainer');
+            loadStudents();
+        }
+
+        async function loadStudents() {
+            const loadingDiv = document.getElementById('loadingIndicator');
+            const studentsDiv = document.getElementById('studentsContainer');
+            const errorDiv = document.getElementById('errorContainer');
+            const toggleCheckbox = document.getElementById('viewToggle');
+
+            loadingDiv.style.display = 'block';
+            studentsDiv.innerHTML = '';
+            errorDiv.innerHTML = '';
+            account_id = localStorage.getItem('account_id');
+            session_token = localStorage.getItem('session_token');
+            if (!session_token) {
+                alert('Session expired. Please login again.');
+                window.location.href = './index.html';
+                return;
+            }
+
+            if(!account_id) {
+                alert('Account ID not found. Please login again.');
+                window.location.href = './index.html';
+                return;
+            }
+            if(toggleCheckbox.checked) {
+                // Load only my uploads
+                var url = `http://localhost:8080/students_uploaded/${account_id}`;
+            } else {
+                // Load all uploads
+                var url = `http://localhost:8080/all_students/${account_id}`;
+            }
+            try {
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `${sessionToken}`,
+                        'Access-Control-Allow-Origin' : '*',
+                    }
+                });
+
+                loadingDiv.style.display = 'none';
+
+                if (response.ok) {
+                    const data = await response.json();
+                    displayStudents(data.students || data);
+                } else {
+                    throw new Error('Failed to load students');
+                }
+            } catch (error) {
+                loadingDiv.style.display = 'none';
+                errorDiv.innerHTML = `<div class="error-message">Error loading students: ${error.message}</div>`;
+                console.error('Error:', error);
+            }
+        }
+
+
+        function displayStudents(students) {
+            const studentsDiv = document.getElementById('studentsContainer');
+
+            if (!students || students.length === 0) {
+                studentsDiv.innerHTML = '<div class="no-data">No students found</div>';
+                return;
+            }
+
+            studentsDiv.innerHTML = students.map(student => `
+                <div class="student-card">
+                    <div class="student-id">${student[1] || 'N/A'}</div>
+                    <div class="student-info"><strong>Id:</strong> ${student[0] || 'N/A'}</div>
+                    <div class="student-info"><strong>Course/Program:</strong> ${student[2] || 'N/A'}</div>
+                    <div class="student-info"><strong>Joining year:</strong> ${student[3] || 'N/A'}</div>
+                    <div class="student-info"><strong>Graduated years:</strong> ${student[4] || 'N/A'}</div>
+                    ${student.courses ? `<div class="student-info"><strong>Courses:</strong> ${student.courses.join(', ')}</div>` : ''}
+                    
+                    <div class="card-actions">
+                        <button class="action-btn update-btn" onclick="updateStudent('${student[0]}', '${student[1]}', '${student[2]}', '${student[3]}', '${student[4]}')">
+                            ✏️ Update
+                        </button>
+                        <button class="action-btn delete-btn" onclick="deleteStudent('${student[0]}', '${student[1]}')">
+                            🗑️ Delete
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateStudent(id, name, course, joiningYear, graduatedYear) {
+            // Store student data in localStorage to pre-fill the form
+            const studentData = {
+                id: id,
+                name: name,
+                course: course,
+                joining_year: joiningYear,
+                graduated_year: graduatedYear,
+                action: 'update'
+            };
+            localStorage.setItem('studentToEdit', JSON.stringify(studentData));
+            
+            // Redirect to action page
+            window.location.href = './action_students.html';
+        }
+
+        function deleteStudent(id, name) {
+            if (confirm(`Are you sure you want to delete student ${name} (${id})?`)) {
+                // Store student data in localStorage
+                const studentData = {
+                    id: id,
+                    name: name,
+                    action: 'delete'
+                };
+                localStorage.setItem('studentToEdit', JSON.stringify(studentData));
+                
+                // Redirect to action page
+                window.location.href = './action_students.html';
+            }
+        }
+
+        function searchStudents() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const cards = document.querySelectorAll('.student-card');
+
+            cards.forEach(card => {
+                const text = card.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        function handleLogout() {
+            localStorage.removeItem('session_token');
+            window.location.href = './index.html';
+        }
+
+        // Enable search on Enter key
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchStudents();
+            }
+        });
+    </script>
+</body>
+</html>

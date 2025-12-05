@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Registration</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .registration-box {
+            background: white;
+            padding: 45px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            width: 450px;
+        }
+
+        .page-title {
+            text-align: center;
+            color: #1a1a1a;
+            margin-bottom: 30px;
+            font-size: 26px;
+        }
+
+        .field-group {
+            margin-bottom: 20px;
+        }
+
+        .field-label {
+            display: block;
+            margin-bottom: 7px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .text-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 15px;
+            box-sizing: border-box;
+        }
+
+        .text-input:focus {
+            outline: none;
+            border-color: #4a90e2;
+        }
+
+        .action-button {
+            width: 100%;
+            padding: 14px;
+            background: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+
+        .action-button:hover {
+            background: #357abd;
+        }
+
+        .back-section {
+            text-align: center;
+            margin-top: 25px;
+        }
+
+        .back-link {
+            display: inline-block;
+            padding: 10px 24px;
+            background: transparent;
+            color: #4a90e2;
+            border: 1px solid #4a90e2;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .back-link:hover {
+            background: #f0f8ff;
+        }
+
+        .alert-box {
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .error-alert {
+            background: #ffe6e6;
+            color: #d32f2f;
+        }
+
+        .success-alert {
+            background: #e6ffe6;
+            color: #2e7d32;
+        }
+
+        .help-text {
+            font-size: 13px;
+            color: #666;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="registration-box">
+        <h1 class="page-title">Create Account</h1>
+        
+        <div id="errorAlert" class="alert-box error-alert"></div>
+        <div id="successAlert" class="alert-box success-alert"></div>
+
+        <form id="registrationForm">
+
+            <div class="field-group">
+                <label for="publicKeyField" class="field-label">Public Key</label>
+                <input type="text" 
+                       id="publicKeyField" 
+                       class="text-input" 
+                       placeholder="Enter public key" 
+                       required>
+            </div>
+
+            <div class="field-group">
+                <label for="passwordField" class="field-label">Password</label>
+                <input type="password" 
+                       id="passwordField" 
+                       class="text-input" 
+                       placeholder="Create password" 
+                       required>
+                <div class="help-text">Minimum 8 characters</div>
+            </div>
+
+            <div class="field-group">
+                <label for="confirmPasswordField" class="field-label">Confirm Password</label>
+                <input type="password" 
+                       id="confirmPasswordField" 
+                       class="text-input" 
+                       placeholder="Re-enter password" 
+                       required>
+            </div>
+
+            <button type="submit" class="action-button">Register</button>
+        </form>
+
+        <div class="back-section">
+            <p style="color: #666; margin-bottom: 12px;">Already registered?</p>
+            <a href="./index.html" class="back-link">Back to Login</a>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('registrationForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            
+            const public_key = document.getElementById('publicKeyField').value;
+            const password = document.getElementById('passwordField').value;
+            const confirmPassword = document.getElementById('confirmPasswordField').value;
+            const errorAlert = document.getElementById('errorAlert');
+            const successAlert = document.getElementById('successAlert');
+            
+            errorAlert.style.display = 'none';
+            successAlert.style.display = 'none';
+
+            if (password !== confirmPassword) {
+                errorAlert.textContent = 'Passwords do not match';
+                errorAlert.style.display = 'block';
+                return;
+            }
+
+            if (password.length < 8) {
+                errorAlert.textContent = 'Password must be at least 8 characters';
+                errorAlert.style.display = 'block';
+                return;
+            }
+
+            try {
+                const response = await fetch('http://localhost:8080/create_account', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Origin' : '*',
+                    },
+                    body: JSON.stringify({
+                        public_key: public_key,
+                        password: password
+                    })
+                });
+
+                if (response.ok) {
+                    successAlert.textContent = 'Registration successful! Redirecting to login...';
+                    successAlert.style.display = 'block';
+                    
+                    setTimeout(() => {
+                        window.location.href = './index.html';
+                    }, 2000);
+                } else {
+                    const errorData = await response.json();
+                    errorAlert.textContent = errorData.message || 'Registration failed';
+                    errorAlert.style.display = 'block';
+                }
+            } catch (error) {
+                errorAlert.textContent = 'Network error. Please try again.';
+                errorAlert.style.display = 'block';
+                console.error('Registration error:', error);
+            }
+        });
+    </script>
+</body>
+</html>

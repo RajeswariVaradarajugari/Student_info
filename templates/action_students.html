@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Actions</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f2f5;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: #2c3e50;
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .navbar h1 {
+            font-size: 24px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-btn {
+            background: transparent;
+            color: white;
+            border: 1px solid white;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .logout-btn {
+            background: #e74c3c;
+            border: none;
+        }
+
+        .logout-btn:hover {
+            background: #c0392b;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .form-card {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .form-title {
+            font-size: 28px;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .form-subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .required {
+            color: #e74c3c;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 15px;
+            transition: border-color 0.3s;
+            font-family: Arial, sans-serif;
+        }
+
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+            font-family: 'Courier New', monospace;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .form-select {
+            cursor: pointer;
+            background-color: white;
+        }
+
+        .action-select {
+            font-weight: 500;
+        }
+
+        .action-select option {
+            padding: 10px;
+        }
+
+        .input-with-button {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+
+        .input-with-button .form-input,
+        .input-with-button .form-textarea {
+            flex: 1;
+        }
+
+        .generate-btn {
+            padding: 12px 20px;
+            background: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .generate-btn:hover {
+            background: #229954;
+            transform: translateY(-2px);
+        }
+
+        .generate-btn:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 10px;
+        }
+
+        .submit-btn:hover {
+            background: #2980b9;
+        }
+
+        .submit-btn:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+        }
+
+        .message-box {
+            padding: 14px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: none;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .error-box {
+            background: #ffe6e6;
+            color: #c0392b;
+            border-left: 4px solid #e74c3c;
+        }
+
+        .success-box {
+            background: #d5f4e6;
+            color: #27ae60;
+            border-left: 4px solid #2ecc71;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            color: #1976d2;
+            border-left: 4px solid #2196f3;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
+        .crypto-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 30px;
+            margin-bottom: 20px;
+            border: 2px dashed #dee2e6;
+        }
+
+        .crypto-title {
+            font-size: 18px;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .help-text {
+            font-size: 12px;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>Student Management</h1>
+        <div class="nav-links">
+            <a href="./student_list.html" class="nav-btn">View Students</a>
+            <button class="nav-btn logout-btn" onclick="handleLogout()">Logout</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="form-card">
+            <h1 class="form-title">Student Actions</h1>
+            <p class="form-subtitle">Add, Update, or Delete student records</p>
+
+            <div id="errorBox" class="message-box error-box"></div>
+            <div id="successBox" class="message-box success-box"></div>
+
+            <div class="info-box">
+                <strong>Note:</strong> For <strong>Update</strong> and <strong>Delete</strong> operations, Student ID is required. For <strong>Add</strong> operation, all fields are required.
+            </div>
+
+            <form id="studentActionForm">
+                <div class="form-group">
+                    <label for="actionSelect" class="form-label">
+                        Action <span class="required">*</span>
+                    </label>
+                    <select id="actionSelect" class="form-select action-select" required>
+                        <option value="">-- Select Action --</option>
+                        <option value="add">Add New Student</option>
+                        <option value="update">Update Student</option>
+                        <option value="delete">Delete Student</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="studentId" class="form-label">
+                        Student ID <span class="required">*</span>
+                    </label>
+                    <input type="text" 
+                           id="studentId" 
+                           class="form-input" 
+                           placeholder="Enter student ID (e.g., STU001)" 
+                           required>
+                </div>
+
+                <div class="form-group">
+                    <label for="studentName" class="form-label">
+                        Name <span id="nameRequired" class="required">*</span>
+                    </label>
+                    <input type="text" 
+                           id="studentName" 
+                           class="form-input" 
+                           placeholder="Enter full name">
+                </div>
+
+                <div class="form-group">
+                    <label for="studentCourse" class="form-label">
+                        Course/Program <span id="courseRequired" class="required">*</span>
+                    </label>
+                    <input type="text" 
+                           id="studentCourse" 
+                           class="form-input" 
+                           placeholder="Enter course or program name">
+                </div>
+
+                <div class="form-group">
+                    <label for="joiningYear" class="form-label">
+                        Joining Year <span id="joiningRequired" class="required">*</span>
+                    </label>
+                    <input type="number" 
+                           id="joiningYear" 
+                           class="form-input" 
+                           placeholder="Enter joining year (e.g., 2020)" 
+                           min="1900" 
+                           max="2100">
+                </div>
+
+                <div class="form-group">
+                    <label for="graduatedYear" class="form-label">
+                        Graduated Year <span id="graduatedRequired" class="required">*</span>
+                    </label>
+                    <input type="number" 
+                           id="graduatedYear" 
+                           class="form-input" 
+                           placeholder="Enter graduation year (e.g., 2024)" 
+                           min="1900" 
+                           max="2100">
+                </div>
+
+                <div class="crypto-section">
+                    <div class="crypto-title">
+                        🔐 Cryptographic Security
+                    </div>
+
+                    <div class="form-group">
+                        <label for="publicKey" class="form-label">
+                            Public Key <span class="required">*</span>
+                        </label>
+                        <textarea 
+                            id="publicKey" 
+                            class="form-textarea" 
+                            placeholder="Enter your public key"
+                            required></textarea>
+                        <div class="help-text">Public key for encryption and verification</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="privateKey" class="form-label">
+                            Private Key <span class="required">*</span>
+                        </label>
+                        <div class="input-with-button">
+                            <textarea 
+                                id="privateKey" 
+                                class="form-textarea" 
+                                placeholder="Enter your private key or click Generate Signature"
+                                required></textarea>
+                            <button type="button" class="generate-btn" onclick="generateSignature()">
+                                🔑 Generate Signature
+                            </button>
+                        </div>
+                        <div class="help-text">Keep your private key secure and never share it</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="signature" class="form-label">
+                            Signature <span class="required">*</span>
+                        </label>
+                        <textarea 
+                            id="signature" 
+                            class="form-textarea" 
+                            placeholder="Signature will be auto-generated"
+                            required></textarea>
+                        <div class="help-text">Digital signature for verifying data integrity</div>
+                    </div>
+                </div>
+
+                <div class="loading-spinner" id="loadingSpinner">
+                    <div class="spinner"></div>
+                    <p>Processing request...</p>
+                </div>
+
+                <button type="submit" class="submit-btn" id="submitBtn">
+                    Submit
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Check authentication
+        const sessionToken = localStorage.getItem('session_token');
+        const accountId = localStorage.getItem('account_id');
+        document.getElementById('publicKey').value = localStorage.getItem('public_key') || '';
+        if (!sessionToken || !accountId) {
+            alert('Please login first');
+            window.location.href = './index.html';
+        }
+
+        // Pre-fill form if coming from student list
+        window.addEventListener('DOMContentLoaded', function() {
+            const studentToEdit = localStorage.getItem('studentToEdit');
+            
+            if (studentToEdit) {
+                try {
+                    const studentData = JSON.parse(studentToEdit);
+                    
+                    // Pre-fill the form
+                    document.getElementById('actionSelect').value = studentData.action || '';
+                    document.getElementById('studentId').value = studentData.id || '';
+                    document.getElementById('studentName').value = studentData.name || '';
+                    document.getElementById('studentCourse').value = studentData.course || '';
+                    document.getElementById('joiningYear').value = studentData.joining_year || '';
+                    document.getElementById('graduatedYear').value = studentData.graduated_year || '';
+                    // Trigger action change to adjust form fields
+                    document.getElementById('actionSelect').dispatchEvent(new Event('change'));
+                    
+                    // Clear the stored data
+                    localStorage.removeItem('studentToEdit');
+                } catch (e) {
+                    console.error('Error parsing student data:', e);
+                }
+            }
+        });
+
+        // Generate signature
+
+        async function generateSignature() {
+            const signatureField = document.getElementById('signature');
+            const privateKeyField = document.getElementById('privateKey');
+            const actionField = document.getElementById('actionSelect');
+            const studentIdField = document.getElementById('studentId');
+            const nameField = document.getElementById('studentName');
+            const courseField = document.getElementById('studentCourse');
+            const joiningField = document.getElementById('joiningYear');
+            const graduatedField = document.getElementById('graduatedYear');
+            const generateBtn = event.target;
+            
+            if (!privateKeyField.value) {
+                showMessage('error', 'Please enter a private key first');
+                return;
+            }
+
+            if (!actionField.value) {
+                showMessage('error', 'Please select an action first');
+                return;
+            }
+
+            const action = actionField.value;
+            const studentId = studentIdField.value;
+            let messageToSign = "";
+
+            // Validate based on action type
+            if (action === 'add') {
+                // For add, student ID is optional but other fields are required
+                if (!nameField.value || !courseField.value || !joiningField.value || !graduatedField.value) {
+                    showMessage('error', 'Please fill all required fields (Name, Course, Joining Year, Graduated Year)');
+                    return;
+                }
+                // Message for add (without student ID)
+                messageToSign = `{"Name": "${nameField.value}", "course": "${courseField.value}", "joining_year": ${joiningField.value}, "graduated_year": ${graduatedField.value}}`;
+            } 
+            else if (action === 'update' || action === 'delete') {
+                // For update and delete, student ID is mandatory
+                if (!studentId) {
+                    showMessage('error', 'Student ID is required for ' + action + ' action');
+                    return;
+                }
+                
+                if (!nameField.value || !courseField.value || !joiningField.value || !graduatedField.value) {
+                    showMessage('error', 'Please fill all required fields');
+                    return;
+                }
+                
+                // Message for update/delete (with student ID)
+                messageToSign = `{"Name": "${nameField.value}", "course": "${courseField.value}", "joining_year": ${joiningField.value}, "graduated_year": ${graduatedField.value}, "id": "${studentId}"}`;
+            }
+
+            generateBtn.disabled = true;
+            generateBtn.textContent = 'Generating...';
+
+            try {
+                const response = await fetch('http://localhost:8080/generate_signature', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Origin' : '*',
+                        'Authorization': `${sessionToken}`
+                    },
+                    body: JSON.stringify({
+                        private_key: privateKeyField.value,
+                        message: messageToSign
+                    })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const signature = data.signature || data.sig;
+                    
+                    if (signature) {
+                        signatureField.value = signature;
+                        showMessage('success', 'Signature generated successfully!');
+                    } else {
+                        throw new Error('No signature in response');
+                    }
+                } else {
+                    throw new Error('Failed to generate signature');
+                }
+            } catch (error) {
+                console.error('Error generating signature:', error);
+                showMessage('error', 'Failed to generate signature. Please try again.');
+            } finally {
+                generateBtn.disabled = false;
+                generateBtn.textContent = '🔑 Generate Signature';
+            }
+        }
+
+        // Show message helper
+        function showMessage(type, message) {
+            const errorBox = document.getElementById('errorBox');
+            const successBox = document.getElementById('successBox');
+            
+            errorBox.style.display = 'none';
+            successBox.style.display = 'none';
+            
+            if (type === 'error') {
+                errorBox.textContent = message;
+                errorBox.style.display = 'block';
+            } else {
+                successBox.textContent = message;
+                successBox.style.display = 'block';
+                
+                setTimeout(() => {
+                    successBox.style.display = 'none';
+                }, 3000);
+            }
+        }
+
+        // Handle action selection changes
+        document.getElementById('actionSelect').addEventListener('change', function() {
+            const action = this.value;
+            const nameField = document.getElementById('studentName');
+            const courseField = document.getElementById('studentCourse');
+            const joiningField = document.getElementById('joiningYear');
+            const graduatedField = document.getElementById('graduatedYear');
+
+            const nameRequired = document.getElementById('nameRequired');
+            const courseRequired = document.getElementById('courseRequired');
+            const joiningRequired = document.getElementById('joiningRequired');
+            const graduatedRequired = document.getElementById('graduatedRequired');
+
+            // Clear previous messages
+            document.getElementById('errorBox').style.display = 'none';
+            document.getElementById('successBox').style.display = 'none';
+
+            if (action === 'delete') {
+                // For delete, only ID is required
+                nameField.removeAttribute('required');
+                courseField.removeAttribute('required');
+                joiningField.removeAttribute('required');
+                graduatedField.removeAttribute('required');
+
+                nameRequired.style.display = 'none';
+                courseRequired.style.display = 'none';
+                joiningRequired.style.display = 'none';
+                graduatedRequired.style.display = 'none';
+
+                // Disable other fields
+                nameField.disabled = true;
+                courseField.disabled = true;
+                joiningField.disabled = true;
+                graduatedField.disabled = true;
+            } else {
+                // For add and update, all fields are required
+                nameField.setAttribute('required', 'required');
+                courseField.setAttribute('required', 'required');
+                joiningField.setAttribute('required', 'required');
+                graduatedField.setAttribute('required', 'required');
+
+                nameRequired.style.display = 'inline';
+                courseRequired.style.display = 'inline';
+                joiningRequired.style.display = 'inline';
+                graduatedRequired.style.display = 'inline';
+
+                // Enable fields
+                nameField.disabled = false;
+                courseField.disabled = false;
+                joiningField.disabled = false;
+                graduatedField.disabled = false;
+            }
+        });
+
+        // Handle form submission
+        document.getElementById('studentActionForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const action = document.getElementById('actionSelect').value;
+            const studentId = document.getElementById('studentId').value;
+            const studentName = document.getElementById('studentName').value;
+            const studentCourse = document.getElementById('studentCourse').value;
+            const joiningYear = document.getElementById('joiningYear').value;
+            const graduatedYear = document.getElementById('graduatedYear').value;
+            const publicKey = document.getElementById('publicKey').value;
+            const privateKey = document.getElementById('privateKey').value;
+            const signature = document.getElementById('signature').value;
+
+            const errorBox = document.getElementById('errorBox');
+            const successBox = document.getElementById('successBox');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            const submitBtn = document.getElementById('submitBtn');
+            const accountId = localStorage.getItem('account_id');
+            const sessionToken = localStorage.getItem('session_token');
+
+            // Hide messages
+            errorBox.style.display = 'none';
+            successBox.style.display = 'none';
+
+            // Validation
+            if (!action) {
+                errorBox.textContent = 'Please select an action';
+                errorBox.style.display = 'block';
+                return;
+            }
+
+            if (!studentId) {
+                errorBox.textContent = 'Student ID is required';
+                errorBox.style.display = 'block';
+                return;
+            }
+
+            if (!publicKey || !privateKey || !signature) {
+                errorBox.textContent = 'Public key, private key, and signature are required';
+                errorBox.style.display = 'block';
+                return;
+            }
+
+            // Prepare payload
+            const payload = {
+                action_type: action,
+                message: {},
+                signature: signature,
+                public_key: publicKey
+            };
+            
+            if (action === 'add') {
+                payload.message.Name = studentName;
+                payload.message.course = studentCourse;
+                payload.message.joining_year = parseInt(joiningYear);
+                payload.message.graduated_year = parseInt(graduatedYear);
+            }
+
+            if (action === 'delete' || action === 'update') {
+                payload.message.Name = studentName;
+                payload.message.course = studentCourse;
+                payload.message.joining_year = parseInt(joiningYear);
+                payload.message.graduated_year = parseInt(graduatedYear);
+                payload.message.id = studentId;
+            }
+
+            // Show loading
+            loadingSpinner.style.display = 'block';
+            submitBtn.disabled = true;
+
+            try {
+                const response = await fetch(`http://localhost:8080/action_log/${accountId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `${sessionToken}`,
+                        'Access-Control-Allow-Origin' : '*',
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                loadingSpinner.style.display = 'none';
+                submitBtn.disabled = false;
+
+                if (response.ok) {
+                    const result = await response.json();
+                    successBox.textContent = result.message || `Student ${action} operation completed successfully!`;
+                    successBox.style.display = 'block';
+
+                    // Reset form after success and redirect
+                    setTimeout(() => {
+                        document.getElementById('studentActionForm').reset();
+                        successBox.style.display = 'none';
+                        window.location.href = './student_list.html';
+                    }, 2000);
+                } else {
+                    const errorData = await response.json();
+                    errorBox.textContent = errorData.message || `Failed to ${action} student`;
+                    errorBox.style.display = 'block';
+                }
+            } catch (error) {
+                loadingSpinner.style.display = 'none';
+                submitBtn.disabled = false;
+                errorBox.textContent = 'Network error. Please check your connection and try again.';
+                errorBox.style.display = 'block';
+                console.error('Error:', error);
+            }
+        });
+
+        function handleLogout() {
+            localStorage.removeItem('session_token');
+            localStorage.removeItem('account_id');
+            window.location.href = './index.html';
+        }
+    </script>
+</body>
+</html>

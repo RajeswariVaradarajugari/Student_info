@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate Keys</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .title {
+            font-size: 32px;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 16px;
+        }
+
+        .generate-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-bottom: 30px;
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .generate-btn:active {
+            transform: translateY(0);
+        }
+
+        .generate-btn:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: #7f8c8d;
+            font-size: 16px;
+        }
+
+        .keys-container {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .key-section {
+            margin-bottom: 25px;
+        }
+
+        .key-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .key-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .copy-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 6px 16px;
+            border-radius: 5px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .copy-btn:hover {
+            background: #2980b9;
+        }
+
+        .copy-btn.copied {
+            background: #27ae60;
+        }
+
+        .key-box {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            word-break: break-all;
+            color: #2c3e50;
+            max-height: 150px;
+            overflow-y: auto;
+            line-height: 1.6;
+        }
+
+        .message-box {
+            padding: 14px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: none;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .error-box {
+            background: #ffe6e6;
+            color: #c0392b;
+            border-left: 4px solid #e74c3c;
+        }
+
+        .success-box {
+            background: #d5f4e6;
+            color: #27ae60;
+            border-left: 4px solid #2ecc71;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            color: #856404;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 20px;
+        }
+
+        .warning-box strong {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .key-info {
+            background: #e3f2fd;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            color: #1976d2;
+            font-size: 14px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .save-btn {
+            flex: 1;
+            padding: 14px;
+            background: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .save-btn:hover {
+            background: #229954;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
+        }
+
+        .save-btn:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+            transform: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="header">
+                <h1 class="title">🔐 Key Generator</h1>
+                <p class="subtitle">Generate Public and Private Key Pair</p>
+            </div>
+
+            <div id="errorBox" class="message-box error-box"></div>
+            <div id="successBox" class="message-box success-box"></div>
+
+            <div class="key-info">
+                <strong>ℹ️ Information:</strong> Click the button below to generate a new cryptographic key pair. Make sure to save your keys securely!
+            </div>
+
+            <button id="generateBtn" class="generate-btn" onclick="generateKeys()">
+                🔑 Generate Keys
+            </button>
+
+            <div class="loading" id="loadingSpinner">
+                <div class="spinner"></div>
+                <p class="loading-text">Generating cryptographic keys...</p>
+            </div>
+
+            <div id="keysContainer" class="keys-container">
+                <div class="key-section">
+                    <div class="key-label">
+                        <span class="key-title">🔓 Public Key</span>
+                        <button class="copy-btn" onclick="copyToClipboard('publicKey', this)">
+                            Copy
+                        </button>
+                    </div>
+                    <div class="key-box" id="publicKey"></div>
+                </div>
+
+                <div class="key-section">
+                    <div class="key-label">
+                        <span class="key-title">🔒 Private Key</span>
+                        <button class="copy-btn" onclick="copyToClipboard('privateKey', this)">
+                            Copy
+                        </button>
+                    </div>
+                    <div class="key-box" id="privateKey"></div>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="save-btn" onclick="saveKeysToLocalStorage()">
+                        💾 Save Keys to Browser
+                    </button>
+                </div>
+
+                <div class="warning-box">
+                    <strong>⚠️ Security Warning:</strong>
+                    Keep your private key secure and never share it with anyone. Store it in a safe location. If you lose your private key, you won't be able to decrypt your data.
+                </div>
+            </div>
+
+            <a href="./student_list.html" class="back-link">← Back to Student List</a>
+        </div>
+    </div>
+
+    <script>
+        async function generateKeys() {
+            const generateBtn = document.getElementById('generateBtn');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            const keysContainer = document.getElementById('keysContainer');
+            const errorBox = document.getElementById('errorBox');
+            const successBox = document.getElementById('successBox');
+
+            // Reset display
+            errorBox.style.display = 'none';
+            successBox.style.display = 'none';
+            keysContainer.style.display = 'none';
+
+            // Show loading
+            generateBtn.disabled = true;
+            loadingSpinner.style.display = 'block';
+
+            try {
+                const response = await fetch('http://localhost:8080/generate_keys', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                loadingSpinner.style.display = 'none';
+                generateBtn.disabled = false;
+
+                if (response.ok) {
+                    const data = await response.json();
+
+                    // Display success message
+                    successBox.textContent = 'Keys generated successfully!';
+                    successBox.style.display = 'block';
+
+                    // Display keys - handle multiple possible response formats
+                    const publicKey = data.public_key || data.publicKey || data.public || 'N/A';
+                    const privateKey = data.private_key || data.privateKey || data.private || 'N/A';
+
+                    document.getElementById('publicKey').textContent = publicKey;
+                    document.getElementById('privateKey').textContent = privateKey;
+
+                    // Store in temporary variables for saving
+                    window.generatedPublicKey = publicKey;
+                    window.generatedPrivateKey = privateKey;
+
+                    // Show keys container
+                    keysContainer.style.display = 'block';
+
+                    // Hide success message after 3 seconds
+                    setTimeout(() => {
+                        successBox.style.display = 'none';
+                    }, 3000);
+
+                } else {
+                    const errorData = await response.json();
+                    errorBox.textContent = errorData.message || 'Failed to generate keys';
+                    errorBox.style.display = 'block';
+                }
+
+            } catch (error) {
+                loadingSpinner.style.display = 'none';
+                generateBtn.disabled = false;
+                errorBox.textContent = 'Network error. Please check your connection and try again.';
+                errorBox.style.display = 'block';
+                console.error('Error:', error);
+            }
+        }
+
+        function copyToClipboard(elementId, button) {
+            const element = document.getElementById(elementId);
+            const text = element.textContent;
+
+            navigator.clipboard.writeText(text).then(() => {
+                // Change button text temporarily
+                const originalText = button.textContent;
+                button.textContent = '✓ Copied!';
+                button.classList.add('copied');
+
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.classList.remove('copied');
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy:', err);
+                alert('Failed to copy to clipboard');
+            });
+        }
+
+        function saveKeysToLocalStorage() {
+            const publicKey = window.generatedPublicKey;
+            const privateKey = window.generatedPrivateKey;
+            const successBox = document.getElementById('successBox');
+            const errorBox = document.getElementById('errorBox');
+
+            if (!publicKey || !privateKey) {
+                errorBox.textContent = 'No keys to save. Please generate keys first.';
+                errorBox.style.display = 'block';
+                return;
+            }
+
+            try {
+                localStorage.setItem('public_key', publicKey);
+                localStorage.setItem('private_key', privateKey);
+                
+                successBox.textContent = 'Keys saved to browser storage successfully!';
+                successBox.style.display = 'block';
+
+                setTimeout(() => {
+                    successBox.style.display = 'none';
+                }, 3000);
+            } catch (error) {
+                errorBox.textContent = 'Failed to save keys to browser storage.';
+                errorBox.style.display = 'block';
+                console.error('Error saving to localStorage:', error);
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,58 @@
+
+curl --location 'localhost:8080./create_account' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer headersa_are_in_the_headers' \
+--data '{
+    "password": "tester",
+    "public_key": "914e7e8ae2e2b6cbf3d6e3deb3ac1e3e3f33a421df5e9ce75d13085e23ebcffe69ea20381f9fade12e2b1cb0cdf8760572c2237f00f514508d29f7d57697c366"
+}'
+
+
+curl --location 'localhost:8080/get_session_token/7e470132-cd15-11f0-a126-1677132aa0c2' \
+--header 'Content-Type: application/json' \
+--data '{
+    "id": "7e470132-cd15-11f0-a126-1677132aa0c2",
+    "password": "tester"
+}'
+
+
+curl --location 'localhost:8080/all_students/7e470132-cd15-11f0-a126-1677132aa0c2' \
+--header 'Authorization: 2eebb3cb26ba631cd891452a17d753cdb0edf2da980cf8300b6423cae21ed6cf'
+
+
+curl --location 'localhost:8080/action_log/7e470132-cd15-11f0-a126-1677132aa0c2' \
+--header 'Authorization: 2eebb3cb26ba631cd891452a17d753cdb0edf2da980cf8300b6423cae21ed6cf' \
+--header 'Content-Type: application/json' \
+--data '{
+    "public_key": "914e7e8ae2e2b6cbf3d6e3deb3ac1e3e3f33a421df5e9ce75d13085e23ebcffe69ea20381f9fade12e2b1cb0cdf8760572c2237f00f514508d29f7d57697c366", 
+    "signature": "ca90d2069ce4394e8e097f4058612dd48b6b441a90bd572437e82a215992e5aa87e149c5d01ad2956b42035c79f4690658a5546dbdc63a5d7676fd816aaf69bd", 
+    "message": {"Name": "John Doe", "course": "Ms in CS", "joining_year": 2022, "graduated_year": 2024}, 
+    "action_type": "add"
+}   '
+
+curl --location 'localhost:8080/unverified_action_log_list/7e470132-cd15-11f0-a126-1677132aa0c2' \
+--header 'Authorization: 2eebb3cb26ba631cd891452a17d753cdb0edf2da980cf8300b6423cae21ed6cf'
+
+curl --location 'localhost:8080/verify_action/7e470132-cd15-11f0-a126-1677132aa0c2' \
+--header 'Authorization: 2eebb3cb26ba631cd891452a17d753cdb0edf2da980cf8300b6423cae21ed6cf' \
+--header 'Content-Type: application/json' \
+--data '{
+    "transaction_id": "2ef5c4e6-cd52-11f0-9cdc-1677132aa0c2"
+}'
+
+
+curl --location 'localhost:8080/students_uploaded/7e470132-cd15-11f0-a126-1677132aa0c2'
+
+curl --location 'localhost:8080/generate_signature' \
+--header 'Content-Type: application/json' \
+--data '{
+    "message": {},
+    "private_key": "81e54fb13a011093019fc1b369dc178bf2debfdf06de6071a7656cb8ddab8465"
+}'
+
+
+
+curl --location 'localhost:8080./action_log_status/2e64ed82-cd79-11f0-aa15-1677132aa0c2'
+
+curl --location 'localhost:8080/generate_keys'
+

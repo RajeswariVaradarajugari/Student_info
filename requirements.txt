@@ -1,0 +1,13 @@
+flask==3.0.0
+Werkzeug==3.0.1
+Jinja2==3.1.2
+itsdangerous==2.1.2
+click==8.1.7
+blinker==1.7.0
+tinyec==0.4.0
+ecdsa==0.19.1
+eciespy==0.4.6
+cryptography==41.0.7
+mysql-connector-python==9.4.0
+datetime==5.1
+flask-cors==4.0.0

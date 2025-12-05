@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Actions</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f2f5;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: #2c3e50;
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .navbar h1 {
+            font-size: 24px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-btn {
+            background: transparent;
+            color: white;
+            border: 1px solid white;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .logout-btn {
+            background: #e74c3c;
+            border: none;
+        }
+
+        .logout-btn:hover {
+            background: #c0392b;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .page-header {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .page-title {
+            font-size: 32px;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .page-subtitle {
+            color: #7f8c8d;
+            font-size: 16px;
+        }
+
+        .message-box {
+            padding: 14px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: none;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .error-box {
+            background: #ffe6e6;
+            color: #c0392b;
+            border-left: 4px solid #e74c3c;
+        }
+
+        .success-box {
+            background: #d5f4e6;
+            color: #27ae60;
+            border-left: 4px solid #2ecc71;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            color: #1976d2;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px;
+            color: #7f8c8d;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .actions-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .action-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .action-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .action-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f2f5;
+        }
+
+        .transaction-id {
+            font-family: 'Courier New', monospace;
+            color: #3498db;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .action-type-badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-add {
+            background: #d5f4e6;
+            color: #27ae60;
+        }
+
+        .badge-update {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .badge-delete {
+            background: #ffe6e6;
+            color: #c0392b;
+        }
+
+        .action-content {
+            margin-bottom: 20px;
+        }
+
+        .message-section {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .message-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .message-data {
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: #555;
+            white-space: pre-wrap;
+            word-break: break-word;
+            line-height: 1.6;
+        }
+
+        .action-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .verify-btn {
+            padding: 12px 24px;
+            background: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .verify-btn:hover {
+            background: #229954;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(39, 174, 96, 0.3);
+        }
+
+        .verify-btn:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .reject-btn {
+            padding: 12px 24px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .reject-btn:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(231, 76, 60, 0.3);
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 80px 20px;
+            color: #95a5a6;
+        }
+
+        .no-data-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .no-data-text {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .no-data-subtext {
+            font-size: 14px;
+            color: #bdc3c7;
+        }
+
+        .stats-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            flex: 1;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: bold;
+            color: #3498db;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>Verify Actions</h1>
+        <div class="nav-links">
+            <a href="./student_list.html" class="nav-btn">View Students</a>
+            <a href="./action_students.html" class="nav-btn">Add/Update Student</a>
+            <button class="nav-btn logout-btn" onclick="handleLogout()">Logout</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">🔍 Verify Pending Actions</h1>
+            <p class="page-subtitle">Review and verify student data changes</p>
+        </div>
+
+        <div id="errorBox" class="message-box error-box"></div>
+        <div id="successBox" class="message-box success-box"></div>
+
+        <div class="info-box">
+            <strong>ℹ️ About Verification:</strong> Review each action carefully before verifying. Once verified, the changes will be applied to the student database and cannot be undone.
+        </div>
+
+        <div class="stats-bar">
+            <div class="stat-card">
+                <div class="stat-number" id="totalCount">0</div>
+                <div class="stat-label">Pending Actions</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="addCount">0</div>
+                <div class="stat-label">Add Actions</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="updateCount">0</div>
+                <div class="stat-label">Update Actions</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="deleteCount">0</div>
+                <div class="stat-label">Delete Actions</div>
+            </div>
+        </div>
+
+        <div id="loadingIndicator" class="loading" style="display: none;">
+            <div class="spinner"></div>
+            <p>Loading unverified actions...</p>
+        </div>
+
+        <div id="actionsContainer" class="actions-list"></div>
+    </div>
+
+    <script>
+        // Check authentication
+        const sessionToken = localStorage.getItem('session_token');
+        const accountId = localStorage.getItem('account_id');
+
+        if (!sessionToken || !accountId) {
+            alert('Please login first');
+            window.location.href = '/';
+        }
+
+        // Load unverified actions on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            loadUnverifiedActions();
+        });
+
+        async function loadUnverifiedActions() {
+            const loadingDiv = document.getElementById('loadingIndicator');
+            const actionsDiv = document.getElementById('actionsContainer');
+            const errorDiv = document.getElementById('errorBox');
+
+            loadingDiv.style.display = 'block';
+            actionsDiv.innerHTML = '';
+            errorDiv.style.display = 'none';
+
+            try {
+                const response = await fetch(`http://localhost:8080/unverified_action_log_list/${accountId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `${sessionToken}`,
+                        'Access-Control-Allow-Origin': '*'
+                    }
+                });
+
+                loadingDiv.style.display = 'none';
+
+                if (response.ok) {
+                    const data = await response.json();
+                    displayActions(data);
+                } else {
+                    throw new Error('Failed to load unverified actions');
+                }
+            } catch (error) {
+                loadingDiv.style.display = 'none';
+                errorDiv.textContent = `Error loading actions: ${error.message}`;
+                errorDiv.style.display = 'block';
+                console.error('Error:', error);
+            }
+        }
+
+        function displayActions(actions) {
+            const actionsDiv = document.getElementById('actionsContainer');
+            const totalCount = document.getElementById('totalCount');
+            const addCount = document.getElementById('addCount');
+            const updateCount = document.getElementById('updateCount');
+            const deleteCount = document.getElementById('deleteCount');
+
+            if (!actions || actions.length === 0) {
+                actionsDiv.innerHTML = `
+                    <div class="no-data">
+                        <div class="no-data-icon">✅</div>
+                        <div class="no-data-text">All Caught Up!</div>
+                        <div class="no-data-subtext">There are no pending actions to verify at the moment.</div>
+                    </div>
+                `;
+                totalCount.textContent = '0';
+                addCount.textContent = '0';
+                updateCount.textContent = '0';
+                deleteCount.textContent = '0';
+                return;
+            }
+
+            // Update stats
+            totalCount.textContent = actions.length;
+            
+            // Count action types (we'll parse messages to determine type)
+            let adds = 0, updates = 0, deletes = 0;
+            
+            actionsDiv.innerHTML = actions.map(action => {
+                const transactionId = action[0];
+                const messageStr = action[1];
+                let message = {};
+                let actionType = 'unknown';
+
+                try {
+                    message = JSON.parse(messageStr);
+                    // Determine action type based on message content
+                    if (message.action_type) {
+                        actionType = message.action_type;
+                    } else if (message.name && message.course) {
+                        actionType = 'add'; // Assume add if has full details
+                    }
+                    
+                    if (actionType === 'add') adds++;
+                    else if (actionType === 'update') updates++;
+                    else if (actionType === 'delete') deletes++;
+                } catch (e) {
+                    console.error('Error parsing message:', e);
+                }
+
+                const badgeClass = actionType === 'add' ? 'badge-add' : 
+                                  actionType === 'update' ? 'badge-update' : 
+                                  actionType === 'delete' ? 'badge-delete' : '';
+
+                return `
+                    <div class="action-card" id="card-${transactionId}">
+                        <div class="action-header">
+                            <div class="transaction-id">
+                                Transaction ID: ${transactionId}
+                            </div>
+                            <span class="action-type-badge ${badgeClass}">
+                                ${actionType}
+                            </span>
+                        </div>
+                        
+                        <div class="action-content">
+                            <div class="message-section">
+                                <div class="message-title">📄 Action Details:</div>
+                                <pre class="message-data">${JSON.stringify(message, null, 2)}</pre>
+                            </div>
+                        </div>
+
+                        <div class="action-footer">
+                            <button class="verify-btn" onclick="verifyAction('${transactionId}')">
+                                ✓ Verify & Apply
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // Update counts after parsing
+            addCount.textContent = adds;
+            updateCount.textContent = updates;
+            deleteCount.textContent = deletes;
+        }
+
+        async function verifyAction(transactionId) {
+            const errorBox = document.getElementById('errorBox');
+            const successBox = document.getElementById('successBox');
+            const card = document.getElementById(`card-${transactionId}`);
+
+            // Hide messages
+            errorBox.style.display = 'none';
+            successBox.style.display = 'none';
+
+            // Disable button
+            const verifyBtn = card.querySelector('.verify-btn');
+            verifyBtn.disabled = true;
+            verifyBtn.textContent = 'Verifying...';
+
+            try {
+                const response = await fetch(`http://localhost:8080/verify_action/${accountId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `${sessionToken}`,
+                        'Access-Control-Allow-Origin': '*'
+                    },
+                    body: JSON.stringify({
+                        transaction_id: transactionId
+                    })
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    successBox.textContent = result.message || 'Action verified successfully!';
+                    successBox.style.display = 'block';
+
+                    // Remove the card from UI with animation
+                    card.style.transition = 'all 0.3s ease';
+                    card.style.opacity = '0';
+                    card.style.transform = 'scale(0.9)';
+                    
+                    setTimeout(() => {
+                        card.remove();
+                        // Reload the list
+                        loadUnverifiedActions();
+                    }, 300);
+
+                    // Hide success message after 3 seconds
+                    setTimeout(() => {
+                        successBox.style.display = 'none';
+                    }, 3000);
+
+                } else {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Failed to verify action');
+                }
+            } catch (error) {
+                errorBox.textContent = `Error: ${error.message}`;
+                errorBox.style.display = 'block';
+                
+                // Re-enable button
+                verifyBtn.disabled = false;
+                verifyBtn.innerHTML = '✓ Verify & Apply';
+                
+                console.error('Error verifying action:', error);
+            }
+        }
+
+        function handleLogout() {
+            localStorage.removeItem('session_token');
+            localStorage.removeItem('account_id');
+            localStorage.removeItem('temp_public_key');
+            window.location.href = '/';
+        }
+    </script>
+</body>
+</html>
